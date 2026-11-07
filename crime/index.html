@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCRB CrimeStat India | Cognizable Crimes (IPC) Analytics 2020–2022</title>
+  <meta name="description" content="Official National Crime Records Bureau (NCRB) Table 1A.1 Interactive Intelligence Portal. Visualizing Cognizable Crimes, Crime Rates, Chargesheeting Efficiency, and 3-Year Trajectories across 28 States and 8 Union Territories.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#090d16] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- NAVBAR -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-40 bg-[#090d16]/90 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo & Dataset Tag -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-extrabold tracking-tight text-white">NCRB CrimeStat India</h1>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 uppercase tracking-wider">Table 1A.1</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Cognizable IPC Crimes &bull; Ministry of Home Affairs (2020–2022)</p>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar with Live Autocomplete -->
+      <div class="relative flex-1 max-w-md hidden md:block">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="global-search-input" 
+            placeholder="Search state, UT, or code (e.g. Kerala, Delhi, UP)..." 
+            class="w-full pl-9 pr-4 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+          >
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <!-- Autocomplete Dropdown -->
+        <div id="search-autocomplete" class="absolute top-10 left-0 right-0 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl z-50 overflow-hidden hidden max-h-60 overflow-y-auto"></div>
+      </div>
+
+      <!-- Navigation & Action Buttons -->
+      <div class="flex items-center gap-2">
+        <a href="#map-section" class="hidden sm:inline-flex px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Map</a>
+        <a href="#charts-section" class="hidden sm:inline-flex px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Analytics</a>
+        <a href="#compare-section" class="hidden sm:inline-flex px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Compare</a>
+        <a href="#table-section" class="hidden sm:inline-flex px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Data Table</a>
+        <a href="#insights-section" class="hidden lg:inline-flex px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Insights</a>
+
+        <!-- Theme Toggle -->
+        <button id="btn-theme-toggle" title="Toggle Dark/Light Mode" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          <svg id="theme-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- HERO BANNER & NATIONAL KPIS -->
+  <!-- ========================================================================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>Verified Official NCRB Dataset &bull; Published 2023–2024</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-white">
+          National Crime Records Bureau <span class="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Intelligence</span>
+        </h2>
+        <p class="text-sm text-slate-400 mt-1 max-w-3xl">
+          State/UT-wise Cognizable Crimes (IPC) Reported, Crime Incidence Rates, Chargesheeting Efficiency, and Population-Adjusted Trends across 36 Indian Jurisdictions (2020–2022).
+        </p>
+      </div>
+
+      <!-- Quick Jump Button -->
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="#compare-section" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+          Compare Jurisdictions
+        </a>
+      </div>
+    </div>
+
+    <!-- National KPI Ribbon -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div id="kpi-total-crimes" class="glass-card p-5"></div>
+      <div id="kpi-crime-rate" class="glass-card p-5"></div>
+      <div id="kpi-chargesheet-rate" class="glass-card p-5"></div>
+      <div id="kpi-population" class="glass-card p-5"></div>
+    </div>
+
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- INTERACTIVE MAP & CHOROPLETH STUDIO -->
+  <!-- ========================================================================= -->
+  <section id="map-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <div class="glass-card p-6">
+      
+      <!-- Studio Header & Controls -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-xl font-extrabold text-white">Jurisdictional Choropleth Visualizer</h3>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Dynamic Heatmap</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">
+            Toggle metrics and visual modes to analyze geospatial crime incidence, police chargesheeting performance, or absolute volumes.
+          </p>
+        </div>
+
+        <!-- View Mode Switcher -->
+        <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
+          <button 
+            data-view-mode="geo" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-white transition flex items-center gap-1.5"
+            title="Full Interactive Vector Map of India with Hotspots, Zoom & Pan"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/></svg>
+            Interactive Map
+          </button>
+          <button 
+            data-view-mode="cartogram" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5"
+            title="Uniform Equal-Area Cartogram for fair visibility of small UTs"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            Tile Cartogram (9x9)
+          </button>
+          <button 
+            data-view-mode="ranking" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5"
+            title="Ranked list with visual choropleth bars"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+            Ranked Bars
+          </button>
+        </div>
+      </div>
+
+      <!-- Metric Selector & Regional Filter Controls -->
+      <div class="flex flex-col gap-3 mb-6">
+        
+        <!-- Metric Buttons -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs uppercase font-bold text-slate-400 mr-1">Choropleth Metric:</span>
+          <button 
+            data-metric="crimesYear" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition shadow-sm active"
+          >
+            📊 Reported IPC Crimes
+          </button>
+          <button 
+            data-metric="crimeRate2022" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition"
+          >
+            ⚡ Crime Rate (IPC per 100k)
+          </button>
+          <button 
+            data-metric="chargesheetingRate2022" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition"
+          >
+            ⚖️ Chargesheeting Rate (%)
+          </button>
+          <button 
+            data-metric="growth2020to2022" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition"
+          >
+            📈 3-Yr Trend (2020-22 %)
+          </button>
+          <button 
+            data-metric="populationLakhs2022" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition"
+          >
+            👥 Mid-Year Population
+          </button>
+        </div>
+
+        <!-- Regional Focus Filter Pills -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/60">
+          <span class="text-xs font-semibold text-slate-400 mr-1.5">Zonal Focus:</span>
+          <button data-region="ALL" class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-cyan-500 text-slate-950 font-black transition">All India (36)</button>
+          <button data-region="North" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800/80 text-slate-300 hover:text-white transition">North (10)</button>
+          <button data-region="South" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800/80 text-slate-300 hover:text-white transition">South (7)</button>
+          <button data-region="East" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800/80 text-slate-300 hover:text-white transition">East (5)</button>
+          <button data-region="West" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800/80 text-slate-300 hover:text-white transition">West (4)</button>
+          <button data-region="Central" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800/80 text-slate-300 hover:text-white transition">Central (2)</button>
+          <button data-region="Northeast" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800/80 text-slate-300 hover:text-white transition">Northeast (8)</button>
+        </div>
+
+      </div>
+
+      <!-- Dynamic Choropleth Legend -->
+      <div id="map-legend" class="max-w-md mx-auto mb-6"></div>
+
+      <!-- Interactive Map Rendering Container -->
+      <div id="map-container" class="min-h-[640px] flex items-center justify-center relative"></div>
+
+    </div>
+
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- MULTI-CHART ANALYTICS STUDIO -->
+  <!-- ========================================================================= -->
+  <section id="charts-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <div class="mb-6">
+      <h3 class="text-2xl font-black text-white">Visual Intelligence & Analytics Studio</h3>
+      <p class="text-xs text-slate-400 mt-1">Multi-dimensional exploration of volume trajectories, policing efficiency scatter quadrants, and state/UT disparity benchmarks.</p>
+    </div>
+
+    <!-- Charts Grid Row 1 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      
+      <!-- Chart 1: 3-Year Trajectory of Top States -->
+      <div class="glass-card p-5">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          <div>
+            <h4 class="text-base font-bold text-white">Top Jurisdictions: 3-Year Volume Trajectory</h4>
+            <p class="text-[11px] text-slate-400">Comparing 2020, 2021, and 2022 cognizable IPC crime volumes</p>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">2020 vs 2022</span>
+        </div>
+        <div class="h-80">
+          <canvas id="chart-trend"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Policing Efficiency Quadrant Matrix (Scatter Plot) -->
+      <div class="glass-card p-5">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          <div>
+            <h4 class="text-base font-bold text-white">Policing Efficiency Quadrant Matrix</h4>
+            <p class="text-[11px] text-slate-400">X: Crime Rate (/100k) &bull; Y: Chargesheeting Rate (%) &bull; Point size = Volume</p>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Scatter Matrix</span>
+        </div>
+        <div class="h-80">
+          <canvas id="chart-quadrant"></canvas>
+        </div>
+        <!-- Quadrant Legend -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-800 text-[10px]">
+          <div class="flex items-center gap-1.5 text-amber-400 font-semibold">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Q1: High Crime, High Charge
+          </div>
+          <div class="flex items-center gap-1.5 text-rose-400 font-semibold">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Q2: High Crime, Low Charge
+          </div>
+          <div class="flex items-center gap-1.5 text-emerald-400 font-semibold">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Q3: Low Crime, High Charge
+          </div>
+          <div class="flex items-center gap-1.5 text-indigo-400 font-semibold">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Q4: Low Crime, Low Charge
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Charts Grid Row 2 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Chart 3: States vs UTs Disparity -->
+      <div class="glass-card p-5">
+        <div class="border-b border-slate-800 pb-3 mb-4">
+          <h4 class="text-base font-bold text-white">States vs UTs Divide</h4>
+          <p class="text-[11px] text-slate-400">Structural disparity in rate and chargesheet efficiency</p>
+        </div>
+        <div class="h-64">
+          <canvas id="chart-disparity"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: Regional Distribution (Radar) -->
+      <div class="glass-card p-5">
+        <div class="border-b border-slate-800 pb-3 mb-4">
+          <h4 class="text-base font-bold text-white">Regional Zonal Analysis</h4>
+          <p class="text-[11px] text-slate-400">North, South, East, West, Central & Northeast</p>
+        </div>
+        <div class="h-64">
+          <canvas id="chart-regional"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 5: Top 5 Highest vs 5 Lowest Crime Rates -->
+      <div class="glass-card p-5">
+        <div class="border-b border-slate-800 pb-3 mb-4">
+          <h4 class="text-base font-bold text-white">Crime Rate Extremes</h4>
+          <p class="text-[11px] text-slate-400">Top 5 Elevated (Red) vs Top 5 Safest (Green)</p>
+        </div>
+        <div class="h-64">
+          <canvas id="chart-rates"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- JURISDICTION COMPARISON STUDIO -->
+  <!-- ========================================================================= -->
+  <section id="compare-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <div class="glass-card p-6">
+      
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-xl font-extrabold text-white">Head-to-Head Comparison Studio</h3>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/30">Multi-Jurisdiction</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Select any three States or Union Territories to perform direct comparative benchmarking.</p>
+        </div>
+
+        <!-- 3 Dropdown Selectors -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <select id="compare-select-1" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-indigo-500/60 text-xs text-white focus:outline-none"></select>
+          <select id="compare-select-2" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-cyan-500/60 text-xs text-white focus:outline-none"></select>
+          <select id="compare-select-3" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-rose-500/60 text-xs text-white focus:outline-none"></select>
+        </div>
+      </div>
+
+      <!-- Comparison Dynamic Content -->
+      <div id="comparison-content"></div>
+
+    </div>
+
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- INTERACTIVE DATA EXPLORER & TABLE -->
+  <!-- ========================================================================= -->
+  <section id="table-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <div class="glass-card p-6">
+      
+      <!-- Table Header & Controls -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-xl font-extrabold text-white">Comprehensive Data Explorer</h3>
+            <span id="table-count" class="text-xs text-slate-400 font-mono-numbers"></span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Click column headers to sort &bull; Click any row to inspect the full State Intelligence Dossier.</p>
+        </div>
+
+        <!-- Table Filters & Export Actions -->
+        <div class="flex flex-wrap items-center gap-2">
+          
+          <!-- Category Filter -->
+          <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button data-filter-type="ALL" class="px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">All (36)</button>
+            <button data-filter-type="State" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">States (28)</button>
+            <button data-filter-type="UT" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">UTs (8)</button>
+          </div>
+
+          <!-- Quadrant Filter -->
+          <select id="filter-quadrant" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 focus:outline-none">
+            <option value="ALL">All Quadrants</option>
+            <option value="Q1">Q1: High Crime, High Charge</option>
+            <option value="Q2">Q2: High Crime, Low Charge</option>
+            <option value="Q3">Q3: Low Crime, High Charge</option>
+            <option value="Q4">Q4: Low Crime, Low Charge</option>
+          </select>
+
+          <!-- Table Search Input -->
+          <div class="relative">
+            <input 
+              type="text" 
+              id="table-search-input" 
+              placeholder="Filter table..." 
+              class="pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-36 sm:w-44"
+            >
+            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+
+          <!-- Export Buttons -->
+          <button id="btn-export-csv" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition flex items-center gap-1.5" title="Export as CSV">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            CSV
+          </button>
+          <button id="btn-export-json" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition flex items-center gap-1.5" title="Export as JSON">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Data Table Responsive Container -->
+      <div class="overflow-x-auto rounded-xl border border-slate-800">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-900/90 text-slate-400 text-[11px] uppercase tracking-wider font-semibold border-b border-slate-800 select-none">
+              <th data-sort="slNo" class="py-3 px-3 cursor-pointer hover:text-white text-center w-12">#</th>
+              <th data-sort="name" class="py-3 px-3 cursor-pointer hover:text-white">State / UT</th>
+              <th data-sort="type" class="py-3 px-3 cursor-pointer hover:text-white">Type</th>
+              <th data-sort="region" class="py-3 px-3 cursor-pointer hover:text-white">Region</th>
+              <th data-sort="crimes2022" class="py-3 px-3 cursor-pointer hover:text-white text-right">2022 Crimes</th>
+              <th data-sort="crimes2021" class="py-3 px-3 cursor-pointer hover:text-white text-right">2021 Crimes</th>
+              <th data-sort="crimes2020" class="py-3 px-3 cursor-pointer hover:text-white text-right">2020 Crimes</th>
+              <th data-sort="growth2020to2022" class="py-3 px-3 cursor-pointer hover:text-white text-right">3-Yr Trend</th>
+              <th data-sort="populationLakhs2022" class="py-3 px-3 cursor-pointer hover:text-white text-right">Pop (Lakhs)</th>
+              <th data-sort="crimeRate2022" class="py-3 px-3 cursor-pointer hover:text-white text-right">Crime Rate</th>
+              <th data-sort="chargesheetingRate2022" class="py-3 px-3 cursor-pointer hover:text-white text-right">Chargesheet %</th>
+              <th data-sort="quadrantCode" class="py-3 px-3 cursor-pointer hover:text-white text-center">Quad</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- EXECUTIVE INSIGHTS & EDITORIAL BRIEFINGS -->
+  <!-- ========================================================================= -->
+  <section id="insights-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <div class="mb-6">
+      <div class="flex items-center gap-2">
+        <h3 class="text-2xl font-black text-white">Executive Insights & Policy Briefings</h3>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">Analytical Takeaways</span>
+      </div>
+      <p class="text-xs text-slate-400 mt-1">Key institutional, procedural, and epidemiological dynamics explaining the 2020–2022 dataset trends.</p>
+    </div>
+
+    <!-- Insights Container -->
+    <div id="insights-container"></div>
+
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER -->
+  <!-- ========================================================================= -->
+  <footer class="bg-slate-950 border-t border-slate-900 py-10 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold">
+          🇮🇳
+        </div>
+        <div>
+          <p class="text-slate-300 font-semibold">NCRB Crime in India Analytics Portal</p>
+          <p class="text-[11px] text-slate-400">National Crime Records Bureau (NCRB) &bull; Ministry of Home Affairs, Government of India &bull; Table 1A.1</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6 text-[11px]">
+        <span>Cognizable IPC Crimes: 2020, 2021, 2022</span>
+        <span>Mid-Year Projected Population 2022</span>
+        <a href="#top" class="text-indigo-400 hover:text-indigo-300 font-semibold">Back to Top &uarr;</a>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- FLOATING SNAPSHOT CARD (Cursor Hover Tooltip) -->
+  <!-- ========================================================================= -->
+  <div id="snapshot-card" class="snapshot-card"></div>
+
+  <!-- ========================================================================= -->
+  <!-- STATE INTELLIGENCE DOSSIER (Drawer Modal) -->
+  <!-- ========================================================================= -->
+  <div id="state-drawer" class="drawer-backdrop fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end">
+    <div class="drawer-content w-full max-w-lg bg-slate-950 border-l border-slate-800 h-full p-6 overflow-y-auto shadow-2xl relative">
+      <button 
+        onclick="window.NCRB.closeStateDrawer()" 
+        class="absolute top-5 right-5 p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
+        title="Close Drawer"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div id="drawer-body"></div>
+    </div>
+  </div>
+
+  <!-- Vector Boundaries for Interactive Map -->
+  <script src="india_map_paths.js"></script>
+  <!-- Embedded Dataset JS (Guarantees zero-dependency offline & file:/// execution) -->
+  <script src="dataset.js"></script>
+  <!-- Application JS Logic -->
+  <script src="app.js"></script>
+
+</body>
+</html>
+

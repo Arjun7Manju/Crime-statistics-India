@@ -1,0 +1,337 @@
+/* Custom styling for NCRB CrimeStat India Portal */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-primary: #090d16;
+  --bg-card: #0f172a;
+  --bg-card-hover: #1e293b;
+  --border-color: #1e293b;
+  --text-primary: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-cyan: #06b6d4;
+  --accent-indigo: #6366f1;
+  --accent-rose: #f43f5e;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+}
+
+.light-theme {
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --accent-cyan: #0284c7;
+  --accent-indigo: #4f46e5;
+  --accent-rose: #e11d48;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.font-mono-numbers {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Glassmorphic Cards */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+/* Subtle glow badges */
+.glow-badge-red {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.glow-badge-green {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.glow-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.glow-badge-cyan {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #22d3ee;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Map Grid Cartogram Styles */
+.cartogram-grid {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.cartogram-tile {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  user-select: none;
+}
+
+.cartogram-tile:hover {
+  transform: translateY(-3px) scale(1.08);
+  z-index: 20;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 15px rgba(99, 102, 241, 0.6);
+  border-color: #fff;
+}
+
+.cartogram-tile.selected {
+  outline: 3px solid #38bdf8;
+  outline-offset: 2px;
+  z-index: 25;
+}
+
+.cartogram-empty {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ========================================================================= */
+/* INTERACTIVE VECTOR SVG MAP STYLES */
+/* ========================================================================= */
+.map-viewport {
+  position: relative;
+  width: 100%;
+  height: 640px;
+  background: radial-gradient(circle at 50% 50%, #0d1527 0%, #060911 100%);
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+  user-select: none;
+}
+
+.map-viewport.panning {
+  cursor: grabbing !important;
+}
+
+.map-svg-root {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  transform-origin: center center;
+}
+
+/* Individual State Boundary Paths */
+.state-boundary {
+  transition: fill 0.35s ease, stroke 0.2s ease, filter 0.2s ease;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 0.8px;
+  cursor: pointer;
+  outline: none;
+}
+
+.state-boundary:hover {
+  stroke: #38bdf8 !important;
+  stroke-width: 2.2px !important;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.85)) brightness(1.2);
+}
+
+.state-boundary.active-selected {
+  stroke: #ffffff !important;
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 16px rgba(99, 102, 241, 1)) brightness(1.3);
+}
+
+.state-boundary.dimmed {
+  opacity: 0.2;
+  filter: grayscale(90%);
+}
+
+/* State Labels */
+.state-label {
+  pointer-events: none;
+  font-size: 11px;
+  font-weight: 800;
+  fill: #ffffff;
+  text-anchor: middle;
+  dominant-baseline: central;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9);
+  transition: opacity 0.25s ease;
+}
+
+/* Crime Hotspot Bubbles */
+.crime-bubble {
+  pointer-events: none;
+  fill: rgba(239, 68, 68, 0.45);
+  stroke: #ef4444;
+  stroke-width: 1.5px;
+  transition: all 0.4s ease;
+}
+
+.crime-bubble.pulse {
+  animation: pulseBubble 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseBubble {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.35;
+  }
+}
+
+/* Map Controls Floating Bar */
+.map-floating-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-control-btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(51, 65, 85, 0.8);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.map-control-btn:hover {
+  background: rgba(99, 102, 241, 0.9);
+  color: #ffffff;
+  border-color: #818cf8;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+}
+
+/* Table styling */
+.table-hover-row {
+  transition: background-color 0.15s ease;
+}
+
+.table-hover-row:hover {
+  background-color: rgba(99, 102, 241, 0.08);
+}
+
+/* Floating Snapshot Card */
+.snapshot-card {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.snapshot-card.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Modal Drawer Animation */
+.drawer-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer-content {
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-backdrop.active .drawer-content {
+  transform: translateX(0);
+}
+
+/* Pulse Animation */
+@keyframes softPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+.animate-soft-pulse {
+  animation: softPulse 3s infinite ease-in-out;
+}
+
+/* Print styles for state briefs */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .glass-card {
+    border: 1px solid #ccc !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
